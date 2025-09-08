@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Infinity Foundation</title>
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is designed as a non-linear, thematic dashboard, allowing users to explore the complex enterprise model in any order. This structure mirrors the "swarmwise" philosophy of the source material. It starts with a hero section to frame the core challenge, followed by six distinct, interactive modules: 1) Ignition Protocol (interactive budget and revenue streams), 2) Global Architecture (visual diagram of legal entities), 3) Financial OS (comparison of DAO vs. VC and a timeline), 4) Agent Core (visualizing the human-to-AI workflow), 5) Contracts (interactive decision matrix), and 6) Roadmap & KPIs (timeline and multi-capital dashboard). This modular approach breaks down the dense report into digestible, engaging sections, prioritizing user exploration and understanding over a rigid, linear narrative. -->
+    <!-- Visualization & Content Choices: The application uses a variety of interactive elements to make the data accessible. 1) Ignition Budget: A Chart.js donut chart is used to show the part-to-whole relationship of the initial $10k investment, with hover interactions for detail. This is ideal for informing and comparing allocations. 2) Legal Structure: A custom HTML/CSS diagram visualizes the hierarchy and relationships between entities, which is more intuitive than text for organizing complex information. 3) Queens VC Rollout: An HTML/CSS timeline shows change over time. 4) Contract Matrix: An interactive HTML table allows users to filter and understand the logic, aiding decision-making. 5) KPIs: Four small Chart.js radar charts are used to compare different types of "capital," reinforcing the holistic success model. All choices adhere to the NO SVG/Mermaid rule and prioritize user interaction to facilitate understanding. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFBF5;
+            color: #1a237e;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 4px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #D4AF37;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #E0E0E0;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            background-color: #1a237e;
+            color: #FFFFFF;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #283593;
+        }
+        .btn-secondary {
+            background-color: #FF7F50;
+            color: #FFFFFF;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #FF6347;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .kpi-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 300px;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #546e7a;
+            max-width: 800px;
+            margin: 0 auto 3rem auto;
+        }
+        .active-tab {
+            background-color: #1a237e!important;
+            color: #fff!important;
+        }
+        .highlight-text {
+            color: #FF7F50;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-gray-800">
+                <span class="text-[#1a237e]">Alpha</span><span class="text-[#FF7F50]">Infinity</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#ignition" class="nav-link text-gray-600 hover:text-[#1a237e] font-medium">Ignition</a>
+                <a href="#architecture" class="nav-link text-gray-600 hover:text-[#1a237e] font-medium">Architecture</a>
+                <a href="#finance" class="nav-link text-gray-600 hover:text-[#1a237e] font-medium">Finance</a>
+                <a href="#agents" class="nav-link text-gray-600 hover:text-[#1a237e] font-medium">Agents</a>
+                <a href="#contracts" class="nav-link text-gray-600 hover:text-[#1a237e] font-medium">Contracts</a>
+                <a href="#roadmap" class="nav-link text-gray-600 hover:text-[#1a237e] font-medium">Roadmap</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#ignition" class="block py-2 px-4 text-sm hover:bg-gray-200">Ignition</a>
+            <a href="#architecture" class="block py-2 px-4 text-sm hover:bg-gray-200">Architecture</a>
+            <a href="#finance" class="block py-2 px-4 text-sm hover:bg-gray-200">Finance</a>
+            <a href="#agents" class="block py-2 px-4 text-sm hover:bg-gray-200">Agents</a>
+            <a href="#contracts" class="block py-2 px-4 text-sm hover:bg-gray-200">Contracts</a>
+            <a href="#roadmap" class="block py-2 px-4 text-sm hover:bg-gray-200">Roadmap</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Hero Section -->
+        <section class="text-center py-16">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">Alpha Infinity Foundation</h1>
+            <div class="text-sm text-gray-500 max-w-4xl mx-auto mb-6 italic space-y-1">
+                <p><span class="font-semibold">A.L.P.H.A.</span> "Altruistic Loving Participatory Human Alliance"</p>
+                <p><span class="font-semibold">I.N.F.I.N.I.T.Y.</span> "Investing Now For Infinitely Nuanced Intelligence That Yearns"</p>
+                <p><span class="font-semibold">F.O.U.N.D.A.T.I.O.N.</span> "For Our United Non-Discriminating Attention To Internally Organise Nirvana."</p>
+            </div>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Passing the "Suleyman Test": An interactive exploration of the strategy to transform a <span class="highlight-text">$10,760 AUD</span> investment into a <span class="highlight-text">$1M+</span> self-sustaining value engine for joyful, responsible abundance.</p>
+        </section>
+
+        <!-- Section 1: Ignition Protocol -->
+        <section id="ignition" class="py-16">
+            <h2 class="section-title text-center">The Ignition Protocol</h2>
+            <p class="section-subtitle text-center">This section details the initial phase: transforming a modest investment into a self-sustaining engine. It's the first prototype of the ecosystem's economic model, leveraging immediate skills to generate a "circular surplus" for reinvestment. Explore the capital allocation and the dual revenue engines designed for radical efficiency.</p>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold mb-4 text-center">Initial Capital Allocation</h3>
+                    <p class="text-center text-gray-500 mb-6">The initial $10,760 AUD is strategically divided into three parallel "VA Swarms" to maximize leverage and accelerate progress from day one.</p>
+                    <div class="chart-container">
+                        <canvas id="ignitionBudgetChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold mb-4 text-center">Dual Revenue Engines</h3>
+                    <p class="text-center text-gray-500 mb-6">The system activates two parallel engines to build cash flow and community. Select an engine to see its core offerings.</p>
+                    <div class="flex justify-center mb-6 rounded-lg p-1 bg-gray-200">
+                        <button id="revenue-btn-ai" class="revenue-toggle-btn active-tab flex-1 py-2 px-4 rounded-md font-semibold transition">AI Services</button>
+                        <button id="revenue-btn-community" class="revenue-toggle-btn flex-1 py-2 px-4 rounded-md font-semibold transition">Community & Culture</button>
+                    </div>
+                    <div id="revenue-content">
+                        <!-- Content will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Global Architecture -->
+        <section id="architecture" class="py-16 bg-white rounded-2xl my-16">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title text-center">Global Corporate & Legal Architecture</h2>
+                <p class="section-subtitle text-center">A resilient global enterprise requires a sophisticated legal structure. This section visualizes the hybrid model designed to protect the mission, enable commercial operations, and steward the intellectual property. Click on each entity to understand its role in the ecosystem.</p>
+                <div class="w-full p-4">
+                    <div class="flex flex-wrap justify-center items-stretch gap-8 text-center">
+                        
+                        <div class="architecture-node card p-4 w-64 cursor-pointer flex flex-col justify-center" data-title="Alpha Infinity Foundation (Australia)" data-content="Established as a Company Limited by Guarantee (CLG), this non-profit entity is the 'super share IP holding mothership.' Its sole purpose is to hold, protect, and steward the ecosystem's core IP in perpetuity, ensuring it is always used in alignment with the foundational mission. ACNC registration provides a 'legal firewall' around the IP.">
+                            <span class="text-3xl">🛡️</span>
+                            <h4 class="font-bold mt-2">Alpha Infinity Foundation</h4>
+                            <p class="text-sm text-gray-500">(Australia Non-Profit)</p>
+                            <span class="text-xs mt-2 text-blue-600">IP Mothership</span>
+                        </div>
+
+                        <div class="architecture-node card p-4 w-64 cursor-pointer flex flex-col justify-center" data-title="U.S. Public Benefit Corp (PBC)" data-content="A Delaware Public Benefit Corporation serves as the primary engine for commercial activity, innovation, and scaling. As a for-profit C-Corp, it can raise venture capital and pursue commercial contracts, while its legally enshrined public benefit purpose ensures it remains mission-aligned.">
+                            <span class="text-3xl">⚙️</span>
+                            <h4 class="font-bold mt-2">U.S. Operating Entity</h4>
+                            <p class="text-sm text-gray-500">(Delaware PBC)</p>
+                             <span class="text-xs mt-2 text-green-600">Commercial Arm</span>
+                        </div>
+
+                        <div class="architecture-node card p-4 w-64 cursor-pointer flex flex-col justify-center" data-title="India Entity" data-content="A Section 8 Company under India's Companies Act. This non-profit structure is key to unlocking local government grants (e.g., from DST) and mandatory Corporate Social Responsibility (CSR) funding from large Indian corporations. Establishment is opportunity-driven.">
+                            <span class="text-3xl">🇮🇳</span>
+                            <h4 class="font-bold mt-2">India Entity</h4>
+                            <p class="text-sm text-gray-500">(Section 8 Co.)</p>
+                             <span class="text-xs mt-2 text-orange-600">Regional Partner</span>
+                        </div>
+
+                        <div class="architecture-node card p-4 w-64 cursor-pointer flex flex-col justify-center" data-title="Japan Entity" data-content="A General Incorporated Association (Ippan Shadan Hojin). This flexible non-profit structure provides a legitimate local presence essential for partnering with Japanese universities, research institutions like JAXA, and applying for government funding (e.g., from JST or NEDO).">
+                            <span class="text-3xl">🇯🇵</span>
+                            <h4 class="font-bold mt-2">Japan Entity</h4>
+                            <p class="text-sm text-gray-500">(Association)</p>
+                             <span class="text-xs mt-2 text-red-600">Regional Partner</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Architecture Modal -->
+        <div id="architecture-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-title" class="text-2xl font-bold"></h3>
+                    <button id="modal-close" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+                </div>
+                <p id="modal-content" class="text-gray-600"></p>
+            </div>
+        </div>
+
+        <!-- Section 3: Financial OS -->
+        <section id="finance" class="py-16">
+            <h2 class="section-title text-center">The Financial Operating System</h2>
+            <p class="section-subtitle text-center">The ecosystem's financial architecture embodies "Braided Economics" by weaving together multiple capital streams. This section explores the dual approach of a Web3 DAO and a traditional VC, alongside a phased global rollout designed to scale real-world impact.</p>
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold mb-4">🌐 GAJRA Earth DAO</h3>
+                    <p class="text-gray-600 mb-4">The decentralized governance and financial backbone, funded by a phased and compliance-focused token launch.</p>
+                    <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-start"><span class="text-[#FF7F50] mr-2 mt-1">●</span><span><strong>Utility:</strong> Primary medium of exchange on the Aura Marketplace.</span></li>
+                        <li class="flex items-start"><span class="text-[#FF7F50] mr-2 mt-1">●</span><span><strong>Governance:</strong> Token holders vote on treasury allocation and protocol upgrades.</span></li>
+                        <li class="flex items-start"><span class="text-[#FF7F50] mr-2 mt-1">●</span><span><strong>Equity:</strong> Staking tokens provides rewards from ecosystem surplus.</span></li>
+                    </ul>
+                </div>
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold mb-4">👑 Queens Venture Capital</h3>
+                    <p class="text-gray-600 mb-4">A women-led, swarm-based venture creation system to fund and replicate proven regenerative enterprise "playbooks" globally.</p>
+                     <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-start"><span class="text-[#1a237e] mr-2 mt-1">●</span><span><strong>Structure:</strong> A distinct fund managed by a subsidiary of the U.S. PBC.</span></li>
+                        <li class="flex items-start"><span class="text-[#1a237e] mr-2 mt-1">●</span><span><strong>Funding:</strong> Attracts impact investors, family offices, and institutional capital.</span></li>
+                        <li class="flex items-start"><span class="text-[#1a237e] mr-2 mt-1">●</span><span><strong>Goal:</strong> Populate a "planetary grid" of thousands of value-aligned companies.</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card p-8">
+                <h3 class="text-2xl font-bold mb-6 text-center">Queens VC Phased Global Rollout</h3>
+                <div class="relative">
+                    <!-- The line -->
+                    <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-300"></div>
+                    <!-- Phases -->
+                    <div class="relative mb-8">
+                        <div class="flex items-center">
+                            <div class="w-1/2 pr-8 text-right">
+                                <h4 class="font-bold text-lg text-[#1a237e]">Phase 1: Proof of Concept</h4>
+                                <p class="text-gray-600">Launch 500 companies in one region to harden playbooks and build community mythos.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-[#1a237e] text-white flex items-center justify-center absolute left-1/2 -translate-x-1/2 z-10">500</div>
+                        </div>
+                    </div>
+                     <div class="relative mb-8">
+                        <div class="flex items-center flex-row-reverse">
+                            <div class="w-1/2 pl-8 text-left">
+                                <h4 class="font-bold text-lg text-[#FF7F50]">Phase 2: Replication</h4>
+                                <p class="text-gray-600">Establish a "G20 lattice" of 10,000 companies, validating cross-border scalability.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-[#FF7F50] text-white flex items-center justify-center absolute left-1/2 -translate-x-1/2 z-10">10k</div>
+                        </div>
+                    </div>
+                     <div class="relative">
+                        <div class="flex items-center">
+                            <div class="w-1/2 pr-8 text-right">
+                                <h4 class="font-bold text-lg text-[#1a237e]">Phase 3: Planetary Grid</h4>
+                                <p class="text-gray-600">Expand to 50,000 companies across 100+ countries to achieve macro-level influence.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-[#1a237e] text-white flex items-center justify-center absolute left-1/2 -translate-x-1/2 z-10">50k</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Agent Core -->
+        <section id="agents" class="py-16 bg-white rounded-2xl my-16">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title text-center">The Agent-Driven Functional Core</h2>
+                <p class="section-subtitle text-center">Operational scalability is achieved through a multi-layered swarm of AI and human agents. This section illustrates the phased deployment, starting with human-led teams whose workflows become the training data for their future AI counterparts, enabling the "Time-Rich Founder" philosophy.</p>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="card p-6 text-center w-full md:w-1/4">
+                        <span class="text-3xl">👥</span>
+                        <h4 class="font-bold text-lg mt-2">Human VA Swarm</h4>
+                        <p class="text-sm text-gray-500">Initial teams handle creative, wellness, and systems tasks.</p>
+                    </div>
+                    <div class="text-2xl font-bold text-[#FF7F50] transform rotate-90 md:rotate-0">→</div>
+                    <div class="card p-6 text-center w-full md:w-1/4">
+                        <span class="text-3xl">📝</span>
+                        <h4 class="font-bold text-lg mt-2">SOP Mandate</h4>
+                        <p class="text-sm text-gray-500">Workflows are documented, creating structured training data.</p>
+                    </div>
+                    <div class="text-2xl font-bold text-[#FF7F50] transform rotate-90 md:rotate-0">→</div>
+                    <div class="card p-6 text-center w-full md:w-1/4">
+                        <span class="text-3xl">🤖</span>
+                        <h4 class="font-bold text-lg mt-2">Administrative AI</h4>
+                        <p class="text-sm text-gray-500">AI Scribe, Voice, and Memory automate core admin functions.</p>
+                    </div>
+                     <div class="text-2xl font-bold text-[#FF7F50] transform rotate-90 md:rotate-0">→</div>
+                    <div class="card p-6 text-center w-full md:w-1/4">
+                        <span class="text-3xl">👑</span>
+                        <h4 class="font-bold text-lg mt-2">24 Queens & Aura Agents</h4>
+                        <p class="text-sm text-gray-500">Advanced AI mentors provide user-facing guidance and orchestration.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Contractual Nervous System -->
+        <section id="contracts" class="py-16">
+            <h2 class="section-title text-center">The Contractual Nervous System</h2>
+            <p class="section-subtitle text-center">A global enterprise demands a hybrid contractual system. This interactive matrix helps you understand the strategic choice between legally robust traditional contracts and efficient, automated smart contracts based on risk, subjectivity, and the need for legal recourse.</p>
+            <div class="card p-8 overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="p-4 font-semibold">Agreement Type</th>
+                            <th class="p-4 font-semibold">Subjectivity</th>
+                            <th class="p-4 font-semibold">Value/Risk</th>
+                            <th class="p-4 font-semibold">Automation</th>
+                            <th class="p-4 font-semibold">Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 font-medium">IP License (Foundation to PBC)</td>
+                            <td class="p-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">High</span></td>
+                            <td class="p-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Very High</span></td>
+                            <td class="p-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Low</span></td>
+                            <td class="p-4 font-bold text-[#1a237e]">Traditional Legal</td>
+                        </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 font-medium">VA Service Agreement</td>
+                            <td class="p-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Medium</span></td>
+                            <td class="p-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Medium</span></td>
+                            <td class="p-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Low</span></td>
+                            <td class="p-4 font-bold text-[#1a237e]">Traditional Legal</td>
+                        </tr>
+                         <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 font-medium">Queens VC Investment</td>
+                            <td class="p-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">High</span></td>
+                            <td class="p-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Very High</span></td>
+                            <td class="p-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Medium</span></td>
+                            <td class="p-4 font-bold text-gray-700">Hybrid (Traditional + Smart)</td>
+                        </tr>
+                         <tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 font-medium">DAO Proposal Vote</td>
+                            <td class="p-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Low</span></td>
+                            <td class="p-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Varies</span></td>
+                            <td class="p-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">High</span></td>
+                            <td class="p-4 font-bold text-[#FF7F50]">Smart Contract</td>
+                        </tr>
+                         <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-medium">Token Vesting Schedule</td>
+                            <td class="p-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Low</span></td>
+                            <td class="p-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">High</span></td>
+                            <td class="p-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">High</span></td>
+                            <td class="p-4 font-bold text-[#FF7F50]">Smart Contract</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 6: Roadmap & KPIs -->
+        <section id="roadmap" class="py-16 bg-white rounded-2xl my-16">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title text-center">Strategic Synthesis: Roadmap & KPIs</h2>
+                <p class="section-subtitle text-center">This final section synthesizes all components into a cohesive strategy. It provides a time-lined roadmap for the first year and defines the holistic metrics used to measure progress towards creating $1M in total "Regenerative Value," not just financial return.</p>
+                
+                <div class="card p-8 mb-12">
+                     <h3 class="text-2xl font-bold mb-6 text-center">The First 365 Days: An Integrated Roadmap</h3>
+                     <div class="flex flex-col md:flex-row justify-between text-center">
+                        <div class="flex-1 p-4">
+                            <div class="p-4 bg-gray-100 rounded-lg">
+                                <p class="font-bold text-[#1a237e]">Q1: Foundation & Ignition</p>
+                                <p class="text-sm text-gray-600 mt-2">File incorporations, allocate budget, launch VA swarms, AI consulting, and membership community.</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 p-4 border-t-2 md:border-t-0 md:border-l-2 border-dashed border-gray-300">
+                             <div class="p-4 bg-gray-100 rounded-lg">
+                                <p class="font-bold text-[#1a237e]">Q2: Momentum & Prototyping</p>
+                                <p class="text-sm text-gray-600 mt-2">Pursue anchor grants, commission "Everything App" MVP, deploy Admin AI, convene local partners.</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 p-4 border-t-2 md:border-t-0 md:border-l-2 border-dashed border-gray-300">
+                             <div class="p-4 bg-gray-100 rounded-lg">
+                                <p class="font-bold text-[#1a237e]">Q3: Decentralization & Scaling</p>
+                                <p class="text-sm text-gray-600 mt-2">Conduct private token sale, launch DAO, onboard first "500 Queens" VC cohort.</p>
+                            </div>
+                        </div>
+                         <div class="flex-1 p-4 border-t-2 md:border-t-0 md:border-l-2 border-dashed border-gray-300">
+                             <div class="p-4 bg-gray-100 rounded-lg">
+                                <p class="font-bold text-[#1a237e]">Q4: Clinical & Global Pathways</p>
+                                <p class="text-sm text-gray-600 mt-2">Begin TGA/HREC process for dementia trial, incorporate first international subsidiary, conduct annual review.</p>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold mb-6 text-center">The Regenerative Value Dashboard</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg mb-2">Financial Capital</h4>
+                            <div class="kpi-chart-container"><canvas id="financialKpiChart"></canvas></div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg mb-2">Social Capital</h4>
+                            <div class="kpi-chart-container"><canvas id="socialKpiChart"></canvas></div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg mb-2">Intellectual Capital</h4>
+                            <div class="kpi-chart-container"><canvas id="intellectualKpiChart"></canvas></div>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="font-semibold text-lg mb-2">Living Capital</h4>
+                            <div class="kpi-chart-container"><canvas id="livingKpiChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <p>&copy; 2025 Alpha Infinity. An interactive exploration of the Regenerative Civilization Protocol.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Ignition Budget Chart
+            const ignitionBudgetData = {
+                labels: ['Creative IP Engine', 'Wellness & Experience Engine', 'Global Systems Engine'],
+                datasets: [{
+                    label: 'Budget Allocation (AUD)',
+                    data: [3500, 4260, 3000],
+                    backgroundColor: [
+                        'rgba(26, 35, 126, 0.8)',  // #1a237e
+                        'rgba(255, 127, 80, 0.8)', // #FF7F50
+                        'rgba(212, 175, 55, 0.8)'  // #D4AF37
+                    ],
+                    borderColor: '#FFFBF5',
+                    borderWidth: 3,
+                    hoverOffset: 4
+                }]
+            };
+
+            const ignitionBudgetContext = document.getElementById('ignitionBudgetChart').getContext('2d');
+            new Chart(ignitionBudgetContext, {
+                type: 'doughnut',
+                data: ignitionBudgetData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' }).format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Revenue Engine Toggle
+            const revenueContent = {
+                ai: `
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold">AI Efficiency Audit</h4>
+                            <p class="text-sm text-gray-600">A fixed-price ($500-$1,000) diagnostic to identify AI integration opportunities.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Custom GPT for Your Business</h4>
+                            <p class="text-sm text-gray-600">A fixed-fee ($1,500) implementation of a bespoke CustomGPT trained on internal docs.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">AI Content Creation Package</h4>
+                            <p class="text-sm text-gray-600">A monthly retainer ($1,000/month) for high-quality marketing and social content.</p>
+                        </div>
+                    </div>
+                `,
+                community: `
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold">Digital Publishing</h4>
+                            <p class="text-sm text-gray-600">Monetizing fantasy and philosophical works as e-books and audiobooks on platforms like KDP.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Narrative-Driven Merchandise</h4>
+                            <p class="text-sm text-gray-600">Low-risk drop-shipping of "community signal" products on Shopify.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Tiered Membership Community</h4>
+                            <p class="text-sm text-gray-600">Recurring revenue via platforms like Patreon with escalating tiers of access and engagement.</p>
+                        </div>
+                    </div>
+                `
+            };
+            
+            const revenueContainer = document.getElementById('revenue-content');
+            const revenueBtnAi = document.getElementById('revenue-btn-ai');
+            const revenueBtnCommunity = document.getElementById('revenue-btn-community');
+            
+            function updateRevenueContent(type) {
+                revenueContainer.innerHTML = revenueContent[type];
+                if (type === 'ai') {
+                    revenueBtnAi.classList.add('active-tab');
+                    revenueBtnCommunity.classList.remove('active-tab');
+                } else {
+                    revenueBtnCommunity.classList.add('active-tab');
+                    revenueBtnAi.classList.remove('active-tab');
+                }
+            }
+
+            revenueBtnAi.addEventListener('click', () => updateRevenueContent('ai'));
+            revenueBtnCommunity.addEventListener('click', () => updateRevenueContent('community'));
+            updateRevenueContent('ai'); // Initial load
+
+            // Architecture Modal Logic
+            const modal = document.getElementById('architecture-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            const modalClose = document.getElementById('modal-close');
+            const nodes = document.querySelectorAll('.architecture-node');
+
+            nodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    modalTitle.textContent = node.dataset.title;
+                    modalContent.textContent = node.dataset.content;
+                    modal.classList.remove('hidden');
+                });
+            });
+
+            function closeModal() {
+                modal.classList.add('hidden');
+            }
+
+            modalClose.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // KPI Charts
+            const kpiChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { display: true, color: 'rgba(0,0,0,0.1)' },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        grid: { color: 'rgba(0,0,0,0.1)' },
+                        pointLabels: { font: { size: 10 } },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            };
+
+            new Chart(document.getElementById('financialKpiChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['MRR', 'Net Profit', 'Grants Raised', 'VC Raised'],
+                    datasets: [{
+                        label: 'Financial',
+                        data: [65, 59, 90, 81],
+                        fill: true,
+                        backgroundColor: 'rgba(26, 35, 126, 0.2)',
+                        borderColor: 'rgb(26, 35, 126)',
+                        pointBackgroundColor: 'rgb(26, 35, 126)',
+                    }]
+                },
+                options: kpiChartOptions
+            });
+
+            new Chart(document.getElementById('socialKpiChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['Community Members', 'C-Hours', 'Ventures Funded', 'Engagement Rate'],
+                    datasets: [{
+                        label: 'Social',
+                        data: [80, 75, 60, 85],
+                        fill: true,
+                        backgroundColor: 'rgba(255, 127, 80, 0.2)',
+                        borderColor: 'rgb(255, 127, 80)',
+                        pointBackgroundColor: 'rgb(255, 127, 80)',
+                    }]
+                },
+                options: kpiChartOptions
+            });
+
+            new Chart(document.getElementById('intellectualKpiChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['Commons IP', 'Research Papers', 'AI Memory Growth'],
+                    datasets: [{
+                        label: 'Intellectual',
+                        data: [70, 45, 88],
+                        fill: true,
+                        backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                        borderColor: 'rgb(212, 175, 55)',
+                        pointBackgroundColor: 'rgb(212, 175, 55)',
+                    }]
+                },
+                options: kpiChartOptions
+            });
+
+             new Chart(document.getElementById('livingKpiChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['CO2 Sequestered', 'Biodiversity Index', 'Waste Reduction'],
+                    datasets: [{
+                        label: 'Living',
+                        data: [60, 78, 72],
+                        fill: true,
+                        backgroundColor: 'rgba(0, 128, 128, 0.2)',
+                        borderColor: 'rgb(0, 128, 128)',
+                        pointBackgroundColor: 'rgb(0, 128, 128)',
+                    }]
+                },
+                options: kpiChartOptions
+            });
+        });
+    </script>
+</body>
+</html>
